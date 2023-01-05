@@ -1,0 +1,58 @@
+
+.cart_primary, .table{
+    width: 75%;
+    margin: auto;
+    margin-top: 30px;
+    box-shadow: 0 3px 10px rgba(41, 11, 209, 0.2);
+    background-color: white;
+    border-radius: 6px;
+    padding: 10px;
+}
+.cart_primary a{
+    text-decoration: none;
+}
+.cart_primary .primary_flex{
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+table, th, td, table span{
+    padding: 10px;
+    /* border: 1px solid black; */
+}
+.cart_image_flex{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+th span{
+    float: left;
+}
+.span_flex{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    padding: 0px;
+}
+.span_flex2{
+    display: flex;
+    padding: 0;
+    margin: 5px;
+    flex-direction: column;
+}
+.span_flex2 span{
+    padding: 0;
+    margin: 5px;
+    
+}
+.span_flex i{
+    cursor: pointer;
+}
+.span_flex i:hover{
+    color: darkgray
+}
+        
+

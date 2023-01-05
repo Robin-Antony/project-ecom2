@@ -1,0 +1,32 @@
+
+section{
+    max-width: 1250px;
+    margin: auto;
+}
+.item_container{
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+.item_container>div{
+    width: 250px;
+    margin: 1.5%;
+}
+.item_container>div img{
+    width:100%;
+}
+.w3-button{
+    margin: 3px 0;
+    padding: 6px 5px;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+@media only screen and (max-width: 930px){
+    .site_name{
+        display: none;
+    }
+
+}

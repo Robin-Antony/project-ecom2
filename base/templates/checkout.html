@@ -1,0 +1,191 @@
+{% extends 'main.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<link href="{% static 'css/cart.css' %}" rel="stylesheet">
+<link href="{% static 'css/checkout.css' %}" rel="stylesheet">
+
+    <div class="checkout_container">
+        <div class="form_container" >
+            <div>
+                <form action="" id="form">
+                    {% if request.user.is_authenticated %}
+
+                    {% else %}
+                <label for="name"> Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name..">
+            
+                <label for="email">email</label>
+                <input type="email" id="email" name="email" placeholder="Your email">
+                    {% endif %}
+
+                <div  id="form1">
+
+                <label for="addres">Address</label>
+                <input type="text" id="addres" name="address" placeholder="Your Address">
+                <!-- <input type="text" placeholder="address" name="address" > -->
+
+                <label for="state">State</label>
+                <input type="text" id="state" name="state" placeholder="Your State">
+
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" placeholder="Your City">
+
+                <label for="zipcode">Pin</label>
+                <input type="text" id="zipcode" name="zipcode" placeholder="Your Pin">
+            
+                <!-- <label for="country">Country</label>
+                <select id="country" name="country">
+                    <option value="australia">India</option> -->
+                    <!-- <option value="canada">Canada</option>
+                    <option value="usa">USA</option> -->
+                </select>
+                </div>
+                <input type="submit" value="Continue" id="submit-btn">
+                
+
+                </form>
+                
+            </div>
+            <div id="payment-info" class="paypal_option">
+                <small>Paypal Options</small> <button id="make-payment">Make payment</button>
+            </div>
+            
+        </div>
+
+        <div class="cart_primary cart_checkout">
+            <div>
+                <span class="w3-button w3-black"><a href="">Back to cart</a></span>
+            </div>
+            <div class="primary_flex">
+                <span>Items:{{order.total_order_item}}</span>
+                <span>Total:${{order.cart_total}}</span>
+                <!-- <span class="w3-button w3-green"><a href="">Checkout</a></span> -->
+            </div>
+
+            <hr>
+            <h4>Order Summary</h4>
+            <table>
+                {% for item in items %}
+                <tr>
+                    <td>
+                        <span class="cart_image_flex">
+                            <img class="checkout_image" src="{{item.product.imageURL}}"  alt="Steak" >
+                            <span>{{item.product.name}}</span>
+                        </span>
+                    </td>
+                    <td><span>${{item.product.price }}</span></td>
+                    <td>
+                        <span class="span_flex">
+                            <span>x{{item.quantity}}</span>
+                            <!-- <span class="span_flex2">
+                                <span>
+                                    <i class="fa-solid fa-caret-up"></i>
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-caret-down"></i>
+                                </span>
+                            </span> -->
+                        </span>
+                    </td>
+                    <!-- <td><span>$67.88</span></td> -->
+                </tr>
+                {% endfor %}
+
+
+            </table>
+
+
+        </div>
+
+        
+    </div>
+    <script>
+
+        var shipping = "{{order.shipping}}"
+        var total = "{{order.cart_total}}"
+        console.log("total :",total)
+        console.log('shipping :',shipping)
+        if(shipping=='True'){
+            document.getElementById('form1').style.display = 'block';
+        }
+        else{
+            document.getElementById('form1').style.display = 'none';
+        }
+        
+        var form = document.getElementById('form')
+        console.log(form)
+
+        form.addEventListener('submit',function(e){
+            e.preventDefault()
+            console.log('form submitted')
+            document.getElementById('submit-btn').style.display = 'none'
+            document.getElementById('payment-info').style.display = 'block'
+
+        })
+        document.getElementById('make-payment').addEventListener('click',function(e){
+            submitFormData()
+
+        })
+
+        function submitFormData(){
+
+            console.log('paymet buttn clicked')
+            var userFormData = {
+                'name': null,
+                'email': null,
+                'total':total,
+
+            }
+            var shippingAddress = {
+                'address':null,
+                'city':null,
+                'state':null,
+                'zipcode':null,
+            }
+            
+            if(user == 'AnonymousUser'){
+                userFormData['name'] = form.name.value
+                userFormData['email'] = form.email.value
+                
+            }
+            console.log(form.address.value)
+           
+            if(shipping == 'True'){
+                shippingAddress.address = form.address.value
+                shippingAddress.city = form.city.value
+                shippingAddress.state = form.state.value
+                shippingAddress.zipcode = form.zipcode.value
+            }
+            console.log('ok')
+            console.log('shippingAddress :',shippingAddress)
+            console.log('userFormData :',userFormData)
+
+
+            url = '/process_order'
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type':'application/JSON',
+                    'X-CSRFToken':csrftoken,
+                },
+                body: JSON.stringify({'shippingAddress':shippingAddress,'userFormData':userFormData}),
+                
+            }).then((response) => response.json())
+            .then((data) =>{
+
+                console.log('success :',data)
+                cart = {}
+                document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+                window.alert('transaction completed')
+                window.location.href = ('{% url "home" %}')
+            })
+
+
+        }
+
+
+    </script>
+{% endblock %} 

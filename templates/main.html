@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ce1f1fe11f.js" crossorigin="anonymous"></script>
+  <title>Document</title>
+  
+  <link rel="stylesheet" href="{% static 'css/main.css' %}"> 
+  
+  <!-- <link rel="stylesheet" href="{% static 'css/w3.css' %}"> -->
+
+
+
+</head>
+<body>
+  <header>
+    <div class="bars" id="mySidebar"  ><i class="fa-solid fa-bars"></i></div>
+    <div class="logo">
+      <a href="{% url 'home' %}"><img src="{% static 'images/e-com-logo.png' %}" alt=""></a>
+    </div>
+    <!-- only for large screens -->
+    <div class="site_name"><h3>e-com</h3></div>
+    <div class="department"><i class="fa-solid fa-hand"></i><strong>Departments</strong></div>
+    <div class="department"><i class="fa-solid fa-gears"></i><strong>services</strong></div>
+    <!-- only for large screens end -->
+
+    <div class="search">
+      <input type="text" placeholder="search"><i class="fa-solid fa-search"></i>
+    </div>
+    <!-- only for large screen  -->
+    <div class="login"><strong> SignUp</strong></div>
+    <!-- only for large screens end -->
+
+    <div class="cart_logo">
+      <div>{{order.total_order_item}}</div>
+      <a href="{% url 'cart' %}"><img src="{% static 'images/cart-logo.png' %}" alt=""></a>
+    </div>
+    <!-- hidden by default -->
+    <div class="side_bar" id="sideBar" style="display: none;">
+      <div class="close_bar" id="close"><i class="fa-solid fa-xmark"></i></div>
+      <div class="sign"><span> SignUp or Create Account </span></div>
+      <div><i class="fa-solid fa-hand"></i><span>Departments</span></div>
+      <div><i class="fa-solid fa-gears"></i><span>Services</span></div>
+      <div><i class="fa-solid fa-message"></i><span>Give Feedback</span></div>
+    </div>
+  </header>
+  {% block content %}
+
+
+  {% endblock %}
+
+
+  <footer>
+    <div>this website was developed by robin antony</div>
+  </footer>
+  <script>
+    var user = '{{ request.user }}'
+    console.log('user :', user)
+
+    document.getElementById('mySidebar').addEventListener('click', function(){
+      document.getElementById("mySidebar").style.display = "none";
+      document.getElementById("sideBar").style.display = "block";
+
+    })
+
+    document.getElementById('close').addEventListener('click', function(){
+      document.getElementById("mySidebar").style.display = "block";
+      document.getElementById("sideBar").style.display = "none";
+
+    })
+
+    function getToken(name){
+
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+    return cookieValue;
+    }
+    const csrftoken = getToken('csrftoken');
+
+
+    function getCookie(name){
+
+      var cookieArr = document.cookie.split(";")
+
+      for(let i=0;i < cookieArr.length; i++){
+          cookiePair = cookieArr[i].split("=")
+
+          if(name == cookiePair[0].trim()){
+              return decodeURIComponent(cookiePair[1])
+          }
+      }
+      return null;
+    }
+    var cart = JSON.parse(getCookie('cart'))
+
+    if(cart == undefined ){
+      cart = {}
+      console.log('cart was created ')
+      document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path/'
+    }
+
+    var cart = JSON.parse(getCookie('cart'))
+    console.log('cart :',cart)
+    
+  </script>
+
+  <script src="{% static 'js/cart.js' %}" ></script>
+
+</body>
+
+</html>

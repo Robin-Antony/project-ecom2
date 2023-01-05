@@ -1,0 +1,141 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+    <div class="cart_primary">
+        <div>
+            <span class="w3-button w3-black"><a href="">Continue Shopping</a></span>
+        </div>
+        <div class="primary_flex">
+            <span>Items:{{order.total_order_item}}</span>
+            <span>Total:$ {{order.cart_total}}</span>
+            <span class="w3-button w3-green"><a href="{% url 'checkout' %}">Checkout</a></span>
+        </div>
+    </div>
+
+    <table class="table">
+        <tr>
+            <th><span>Item</span></th>
+            <th><span>Price</span></th>
+            <th><span>Quantity</span></th>
+            <th><span>Total</span></th>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td>
+                <span class="cart_image_flex"> 
+                    <img  src="{{item.product.imageURL}}" alt="Steak" style="width: 100px;">
+                    <span>{{item.product.name}}</span>
+                
+                </span>
+                
+            </td>
+            <td><span>${{item.product.price}}</span></td>
+            <td>
+                <span class="span_flex">
+                    <span>{{item.quantity}}</span>
+                    <span class="span_flex2">
+                        <span>
+                            <i class="fa-solid fa-caret-up update-cart" data-action="add" data-product="{{item.product.id}}" ></i>
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-caret-down update-cart" data-action="remove" data-product="{{item.product.id}}"></i>
+                        </span>
+                    </span>
+                </span>
+            </td>
+            <td><span>{{total_order_item}}</span></td>
+        </tr>
+        {% endfor %}
+
+        
+
+       
+
+    </table>
+    <div class="cart_primary">
+        <div>
+            <span class="w3-button w3-black"><a href="">Continue Shopping</a></span>
+        </div>
+        <div class="primary_flex">
+            <span>Items:3</span>
+            <span>Total:$66.79</span>
+            <span class="w3-button w3-green"><a href="">Checkout</a></span>
+        </div>
+    </div>
+    <script>
+        var updateBtns = document.getElementsByClassName('update-cart')
+    
+        for(var i=0; i < updateBtns.length; i++){
+            updateBtns[i].addEventListener('click',function(){
+                var productId = this.dataset.product
+                var action = this.dataset.action
+                console.log('porductid: ', productId)
+                console.log('action: ', action)
+    
+                if(user != 'AnonymousUser'){
+                    console.log('user is  ', user)
+                    updateUserOrder(productId,action)
+                }
+                else if(user == 'AnonymousUser'){
+                    addCookieItem(productId, action)
+                }
+            })
+        }
+    
+        function updateUserOrder(productId,action){
+            console.log('User is authenticated sendign data >>> ')
+    
+            var url = '/update_item'
+            // console.log(csrftoken)
+            fetch(url,{
+                method: 'POST',
+                headers:{
+                    'Content-Type':'application/JSON',
+                    'X-CSRFToken': csrftoken,
+                   
+                },
+                body: JSON.stringify({'productId':productId,'action':action})
+            })
+            .then((response)=>{
+                return response.json();
+            }).then((data)=>{
+                console.log('Data :',data);
+                location.reload()
+            })
+        }
+
+
+        function addCookieItem(productId,action){
+
+            console.log('user is anony')
+
+            if(action == 'add'){
+                console.log(action)
+                if(cart[productId] == undefined){
+                    cart[productId] = {'quantity':1}
+                }else{
+                    cart[productId]["quantity"] += 1
+                }
+            }
+            if(action == 'remove'){
+                console.log('delete')
+                cart[productId]['quantity'] -= 1
+                if(cart[productId]['quantity'] <= 0){
+                    console.log('item shoule be deleted')
+                    delete cart[productId]
+                }
+            }
+
+            console.log('cart:',cart)
+            document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path/'
+            location.reload()
+}
+    
+    
+    
+    </script>
+
+    
+{% endblock %}

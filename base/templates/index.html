@@ -1,0 +1,116 @@
+{% extends 'main.html' %}
+
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+
+<section>
+    <div class="item_container" id="food">
+        {% for product in products %}
+        <div class="">
+            <img src="{{ product.imageURL }}" alt="Sandwich" >
+            <div class="">
+                <p>{{product.name}}<br><b class="">${{product.price}}</b></p>
+                <button class="w3-button w3-black update-cart" data-action="add" data-product="{{ product.id }}">Add to cart</button>&nbsp;<button class="w3-button w3-black">view</button>
+            </div>
+        </div>
+        {% endfor %}   
+    </div>   
+</section>
+<script>
+    var updateBtns = document.getElementsByClassName('update-cart')
+
+    for(var i=0; i < updateBtns.length; i++){
+        updateBtns[i].addEventListener('click',function(){
+            var productId = this.dataset.product
+            var action = this.dataset.action
+            console.log('porductid: ', productId)
+            console.log('action: ', action)
+
+            if(user != 'AnonymousUser'){
+                console.log('user is  ', user)
+                updateUserOrder(productId,action)
+            }
+            else if(user == 'AnonymousUser'){
+                addCookieItem(productId,action)
+            }
+        })
+    }
+
+
+function addCookieItem(productId,action){
+    console.log('user is anony')
+
+    if(action == 'add'){
+        console.log(action)
+        if(cart[productId] == undefined){
+            cart[productId] = {'quantity':1}
+        }else{
+            cart[productId]["quantity"] += 1
+        }
+    }
+    if(action == 'remove'){
+        console.log('delete')
+        cart[productId]['quantity'] -= 1
+        if(cart[productId]['quantity'] <= 0){
+            console.log('item shoule be deleted')
+            delete cart[productId]
+        }
+    }
+
+    console.log('cart:',cart)
+    document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path/'
+    location.reload()
+}
+
+
+
+    function updateUserOrder(productId,action){
+        console.log('User is authenticated sendign data >>> ')
+
+        var url = '/update_item'
+        // console.log(csrftoken)
+        fetch(url,{
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/JSON',
+                'X-CSRFToken': csrftoken,
+               
+            },
+            body: JSON.stringify({'productId':productId,'action':action})
+        })
+        .then((response)=>{
+            return response.json();
+        }).then((data)=>{
+            console.log('Data :',data);
+        })
+    }
+
+
+//     function updateUserOrder(productId,action){
+//     console.log('updateCart works')
+//     var url = '/update_item'
+
+//     fetch(url, {
+//         method:'POST',
+//         headers:{
+//             'Content-Type':'application/JSON',
+//             'X-CSRFToken':csrftoken,
+//         },
+//         body:JSON.stringify({'productId':productId,'action':action})
+//     })
+//     .then((response) => {
+//         return response.json(); 
+//     })
+//     .then((data) => {
+//         console.log('data:', data);
+//         // location.reload()
+//     })
+    
+
+// }
+</script>
+
+    
+{% endblock %}
